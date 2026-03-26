@@ -244,7 +244,10 @@ namespace ImGui
         if (clampToBorder)
             SetNextItemWidth(GetContentRegionAvail().x);
 
-        const ImVec2 windowSize = ImVec2(274.5f, 301.5f);
+        // scale all pixel constants relative to the current font size
+        // (the original values were designed for ImGui's default 13 px font)
+        const float s = GetFontSize() / 13.0f;
+        const ImVec2 windowSize = ImVec2(274.5f * s, 301.5f * s);
         SetNextWindowSize(windowSize);
 
         if (BeginCombo(std::string("##" + myLabel).c_str(), TimePointToLongString(v).c_str()))
@@ -327,7 +330,7 @@ namespace ImGui
             if (BeginTable(std::string("##Table_" + myLabel).c_str(), 7, TABLE_FLAGS, GetContentRegionAvail()))
             {
                 for (const auto& day : DAYS)
-                    TableSetupColumn(day.c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHeaderWidth, 30.0f);
+                    TableSetupColumn(day.c_str(), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoHeaderWidth, 30.0f * s);
 
                 PushStyleColor(ImGuiCol_HeaderHovered, GetStyleColorVec4(ImGuiCol_TableHeaderBg));
                 PushStyleColor(ImGuiCol_HeaderActive, GetStyleColorVec4(ImGuiCol_TableHeaderBg));
