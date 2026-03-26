@@ -259,6 +259,11 @@ namespace ImGui
             int monthIdx = GET_MONTH_UNSCALED(v);
             int year = GET_YEAR(v);
 
+            const tm   todayTm    = Today();
+            const int  todayDay   = GET_DAY(todayTm);
+            const int  todayMonth = GET_MONTH(todayTm);
+            const int  todayYear  = GET_YEAR(todayTm);
+
             PushItemWidth((GetContentRegionAvail().x * 0.5f));
 
             if (ComboBox("##CmbMonth_" + myLabel, MONTHS, monthIdx, altFont))
@@ -291,7 +296,8 @@ namespace ImGui
             PushStyleVar(ImGuiStyleVar_FrameRounding, 20.0f);
             PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
             PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-            BeginDisabled(IsMinDate(v));
+            const bool atCurrentMonth = (year == todayYear) && (monthIdx + 1 == todayMonth);
+            BeginDisabled(IsMinDate(v) || atCurrentMonth);
 
             if (ArrowButtonEx(std::string("##ArrowLeft_" + myLabel).c_str(), ImGuiDir_Left, ImVec2(arrowSize, arrowSize)))
             {
@@ -357,7 +363,13 @@ namespace ImGui
                     {
                         if (day != 0)
                         {
+                            const bool isPast =
+                                (year < todayYear) ||
+                                (year == todayYear && month < todayMonth) ||
+                                (year == todayYear && month == todayMonth && day < todayDay);
+
                             PushStyleVar(ImGuiStyleVar_FrameRounding, 20.0f);
+                            BeginDisabled(isPast);
 
                             const bool selected = day == GET_DAY(v);
                             if (!selected)
@@ -376,6 +388,7 @@ namespace ImGui
                             if (!selected)
                                 PopStyleColor(2);
 
+                            EndDisabled();
                             PopStyleVar();
                         }
 
